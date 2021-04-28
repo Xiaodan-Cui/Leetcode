@@ -14,33 +14,36 @@
  * }
  */
 class Solution {
-    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
-        List<List<Integer>> list = new ArrayList();
-        if(root == null) return list;
-        dfs(root, targetSum, 0 , new ArrayList(), list);
-        return list;
+    class Props{
+        Integer min = null;
+        Integer max = null;
+        int size = 0;
     }
     
-    private void dfs(TreeNode root, int targetSum, int sum, List<Integer> temp,
-                     List<List<Integer>> list){
-        sum += root.val;
-        temp.add(root.val);
-        if(root.left == null && root.right == null) {
-            if (sum == targetSum) {
-                list.add(new ArrayList(temp));
-            }
-            temp.remove(temp.size() - 1);
-            return;
-        }
-        if(root.left != null) {
-            dfs(root.left, targetSum, sum, temp, list);
-        }
-        if(root.right != null) {
-            dfs(root.right, targetSum, sum, temp, list);
-   
-        }
-        sum -= root.val;
-        temp.remove(temp.size() - 1);
+    Map<TreeNode, Props> map = new HashMap();
+    public int largestBSTSubtree(TreeNode root) {
+        if (isBST(root)) return map.get(root).size;
+        return Math.max(largestBSTSubtree(root.left), 
+                        largestBSTSubtree(root.right));
     }
     
+    private boolean isBST(TreeNode root) {
+        Props rootProps = map.getOrDefault(root, new Props());
+        map.put(root, rootProps);
+        if (root == null) {
+            return true;
+        }
+        if (!isBST(root.left) || !isBST(root.right)) {
+            return false;
+        }
+        Props leftProps = map.get(root.left);
+        Props rightProps = map.get(root.right);
+        if (leftProps.max != null && leftProps.max >= root.val || rightProps.min != null && rightProps.min <= root.val) {
+            return false;
+        }
+        rootProps.min = leftProps.min == null ? root.val: leftProps.min;
+        rootProps.max = rightProps.max == null ? root.val : rightProps.max;
+        rootProps.size = 1 + leftProps.size + rightProps.size;
+        return true;
+    }
 }
