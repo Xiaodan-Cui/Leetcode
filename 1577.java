@@ -1,62 +1,30 @@
 class Solution {
     public int numTriplets(int[] nums1, int[] nums2) {
-        Arrays.sort(nums1);
-        Arrays.sort(nums2);
-        int res=0;
-        for(int i=0;i<nums1.length;i++){
-            int left=0;
-            int right=nums2.length-1;
-            while(left<right && nums2[left]<=nums1[i]){
-                if(nums1[i]*nums1[i]<nums2[left]*nums2[right]){
-                    right--;
-                }
-                else if(nums1[i]*nums1[i]>nums2[left]*nums2[right]){
-                    left++;
-                }
-                else{
-                    if(nums2[left]==nums2[right]){
-                        res+=(right-left)*(right-left+1)/2;
-                        break;
-                    }
-                    else{
-                        int a=1;
-                        int b=1;
-                        while(nums2[left++]==nums2[left]){
-                            a++;
-                        }
-                        while(nums2[right--]==nums2[right]){
-                            b++;
-                        }
-                        res+=a*b;
-                    }
-                }
-            }
+        Map<Integer, Integer> map1 = new HashMap();
+        Map<Integer, Integer> map2 = new HashMap();
+        for(int n : nums1){
+            map1.put(n, map1.getOrDefault(n, 0) + 1);
         }
-          for(int i=0;i<nums2.length;i++){
-            int left=0;
-            int right=nums1.length-1;
-            while(left<right && nums1[left]<=nums2[i]){
-                if(nums2[i]*nums2[i]<nums1[left]*nums1[right]){
-                    right--;
+        for(int n : nums2){
+            map2.put(n, map2.getOrDefault(n, 0) + 1);
+        }
+        int res = 0;
+        for(int n1 : map1.keySet()){
+            for(int n2 : map2.keySet()){
+                if (n1 == n2){
+                    res += map1.get(n1) * (map2.get(n2) * (map2.get(n2) - 1) / 2);
+                    res += map2.get(n2) * (map1.get(n1) * (map1.get(n1) - 1) / 2);
                 }
-                else if(nums2[i]*nums2[i]>nums1[left]*nums1[right]){
-                    left++;
-                }
-                else{
-                    if(nums1[left]==nums1[right]){
-                        res+=(right-left)*(right-left+1)/2;
-                        break;
+                if (n1 > n2 && n1 * n1 % n2 == 0){
+                    int n3 = n1 * n1 / n2;
+                    if (map2.containsKey(n3)){
+                        res += map1.get(n1) * map2.get(n2) * map2.get(n3);
                     }
-                    else{
-                        int a=1;
-                        int b=1;
-                        while(nums1[left++]==nums1[left]){
-                            a++;
-                        }
-                        while(nums1[right--]==nums1[right]){
-                            b++;
-                        }
-                        res+=a*b;
+                }
+                if (n2 > n1 && n2 * n2 % n1 == 0){
+                    int n3 = n2 * n2 /n1;
+                    if (map1.containsKey(n3)){
+                        res += map1.get(n1) * map2.get(n2) * map1.get(n3);
                     }
                 }
             }

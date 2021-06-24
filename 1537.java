@@ -1,35 +1,35 @@
 class Solution {
     public int maxSum(int[] nums1, int[] nums2) {
-        long dp1 =0;
-        long dp2 =0;
-        int i=0;
-        int j=0;
-        long mol=(long)1e9+7;
-        while(true){
-            if(i==nums1.length && j==nums2.length) 
-                return(int)(Math.max(dp1, dp2)%mol);
-            else if(i==nums1.length){
-                dp2+=(long)nums2[j];
+        long[] sum1 = new long[nums1.length + 1];
+        long[] sum2 = new long[nums2.length + 1];
+        int i = 1; 
+        int j = 1;
+        int mod = (int) 1e9 + 7;
+        while(i < sum1.length || j < sum2.length){
+            if (i == sum1.length){
+                sum2[j] = sum2[j - 1] + nums2[j - 1];
                 j++;
             }
-            else if(j==nums2.length){
-                dp1+=(long)nums1[i];
+            else if (j == sum2.length){
+                sum1[i] = sum1[i - 1] + nums1[i - 1];
                 i++;
             }
-            else if(nums1[i]<nums2[j]){
-                dp1+=(long)nums1[i];
+            else if (nums1[i - 1] < nums2[j - 1]){
+                sum1[i] = sum1[i - 1] + nums1[i - 1];
                 i++;
             }
-            else if(nums1[i]>nums2[j]){
-                dp2+=(long)nums2[j];
+            else if (nums1[i - 1] > nums2[j - 1]){
+                sum2[j] = sum2[j - 1] + nums2[j - 1];
                 j++;
             }
             else{
-                dp1=Math.max(dp1,dp2)+(long)nums1[i];
-                dp2=dp1;
+                long max = Math.max(sum1[i - 1], sum2[j - 1]);
+                sum1[i] = max + nums1[i - 1];
+                sum2[j] = sum1[i];
                 i++;
                 j++;
             }
         }
+        return (int) (Math.max(sum1[sum1.length - 1], sum2[sum2.length - 1]) % mod);
     }
 }
